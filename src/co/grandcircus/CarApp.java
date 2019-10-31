@@ -56,7 +56,7 @@ public class CarApp {
 	
 	public static void displayMenu(ArrayList<Car> cars) {
 		System.out.println("Current Inventory:");
-		System.out.printf("%s   %-10s %-10s %-10s %-15s %-10s\n", "#", "Make", "Model", "Year", "Price", "Mileage");
+		System.out.printf("%s   %-10s %-9s %-12s %-14s %-10s\n", "#", "Make", "Model", "Year", "Price", "Mileage");
 		System.out.println("");
 		int carCounter = 1;
 		for (Car car : cars) {
