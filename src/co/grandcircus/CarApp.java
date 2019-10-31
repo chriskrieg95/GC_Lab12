@@ -43,10 +43,35 @@ public class CarApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		/*
+		 * addCars and purchaseCars
+		 */
 		System.out.println("Welcome to the Grand Circus Motors admin console!");
 		int numCars = Validator.getInt(scnr, "How many cars are you entering: ");
+		addCars(numCars, scnr, cars);
+		purchaseCar(scnr, cars);
+		System.out.println("Have a great day!");
+		scnr.close();
+	}
+	
+	public static void displayMenu(ArrayList<Car> cars) {
+		System.out.println("Current Inventory:");
+		System.out.printf("%s   %-10s %-10s %-10s %-15s %-10s\n", "#", "Make", "Model", "Year", "Price", "Mileage");
+		System.out.println("");
+		int carCounter = 1;
+		for (Car car : cars) {
+			if (car instanceof UsedCar) {
+				System.out.printf("%d. %-10s %-10s %-10s $%,-15.2f %,-10.1f miles (Used)\n", carCounter++, ((UsedCar) car).getMake(), ((UsedCar) car).getModel(), ((UsedCar) car).getYear(), ((UsedCar) car).getPrice(), ((UsedCar) car).getMileage());
+			} else if (car instanceof Car) {
+				System.out.printf("%d. %-10s %-10s %-10s $%,-15.2f\n", carCounter++, car.getMake(), car.getModel(), car.getYear(), car.getPrice());
+			}
+		}
+		System.out.printf("%d. %-10s\n",carCounter++, "Quit\n");
+	}
+	
+	public static void addCars(int n, Scanner scnr, ArrayList<Car> cars) {
 		int counter = 1;
-		for (int i = 0; i < numCars; i++) {
+		for (int i = 0; i < n; i++) {
 			Car car = new Car();
 			car.setMake(Validator.getString(scnr, "Enter Car # " + counter + " Make: "));
 			car.setModel(Validator.getString(scnr, "Enter Car # " + counter + " Model: "));
@@ -55,6 +80,9 @@ public class CarApp {
 			cars.add(car);
 			counter++;
 		}
+	}
+	
+	public static void purchaseCar(Scanner scnr, ArrayList<Car> cars) {
 		int action = 0;
 		String decision = "";
 		do {
@@ -74,25 +102,7 @@ public class CarApp {
 					action = action -1;
 				}
 			}
-			
 		} while(action != cars.size()+1);
-		System.out.println("Have a great day!");
-		scnr.close();
 	}
-	public static void displayMenu(ArrayList<Car> cars) {
-		System.out.println("Current Inventory:");
-		System.out.printf("%-10s %-10s %-10s %-15s %-10s\n", "Make", "Model", "Year", "Price", "Mileage");
-		System.out.println("");
-		int carCounter = 1;
-		for (Car car : cars) {
-			if (car instanceof UsedCar) {
-				System.out.printf("%d. %-10s %-10s %-10s $%,-15.2f %,-10.1f miles (Used)\n", carCounter++, ((UsedCar) car).getMake(), ((UsedCar) car).getModel(), ((UsedCar) car).getYear(), ((UsedCar) car).getPrice(), ((UsedCar) car).getMileage());
-			} else if (car instanceof Car) {
-				System.out.printf("%d. %-10s %-10s %-10s $%,.2f\n", carCounter++, car.getMake(), car.getModel(), car.getYear(), car.getPrice());
-			}
-		}
-		System.out.printf("%d. %-10s\n",carCounter++, "Quit\n");
-	}
-	
 
 }
