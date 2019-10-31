@@ -30,10 +30,15 @@ public class CarApp {
 		try {
 			Connection myConn = DriverManager.getConnection(url, user, password);
 			Statement myStat = myConn.createStatement();
-			ResultSet myRs = myStat.executeQuery("select * from cars");
-			while (myRs.next()) {
-				Car car = new Car(myRs.getString("Make"), myRs.getString("Model"), myRs.getInt("Year"), myRs.getDouble("Price"));
+			ResultSet myRs1 = myStat.executeQuery("SELECT * FROM test.cars limit 0,4");
+			while (myRs1.next()) {
+				Car car = new Car(myRs1.getString("Make"), myRs1.getString("Model"), myRs1.getInt("Year"), myRs1.getDouble("Price"));
 				cars.add(car);
+			}
+			ResultSet myRs2 = myStat.executeQuery("SELECT * FROM test.cars limit 4,6");
+			while (myRs2.next()) {
+				Car usedCar = new UsedCar(myRs2.getString("Make"), myRs2.getString("Model"), myRs2.getInt("Year"), myRs2.getDouble("Price"),myRs2.getDouble("Mileage"));
+				cars.add(usedCar);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,12 +55,43 @@ public class CarApp {
 			cars.add(car);
 			counter++;
 		}
-		System.out.println("Current Inventory:");
-		for (Car car : cars) {
-			System.out.printf("%-10s %-10s %-10s $%.2f\n", car.getMake(), car.getModel(), car.getYear(), car.getPrice());
-		}
-
+		int action = 0;
+		String decision = "";
+		do {
+			displayMenu(cars);
+			action = Validator.getInt(scnr, "Which car would you like? ", 1, cars.size()+1);
+			if (action != cars.size()+1) {
+				Car car = cars.get(action-1);
+				if (car instanceof UsedCar) {
+					System.out.printf("%d. %-10s %-10s %-10s $%,-15.2f %,-10.1f miles (Used)\n", action, ((UsedCar) car).getMake(), ((UsedCar) car).getModel(), ((UsedCar) car).getYear(), ((UsedCar) car).getPrice(), ((UsedCar) car).getMileage());
+				} else if (car instanceof Car) {
+					System.out.printf("%d. %-10s %-10s %-10s $%,.2f\n", action, car.getMake(), car.getModel(), car.getYear(), car.getPrice());
+				}
+				decision = Validator.getString(scnr, "Would you like to buy this car? (y/n) ");
+				if (decision.toLowerCase().charAt(0) == 'y') {
+					System.out.println("Excellent! Our finance department will be in touch shortly.");
+					cars.remove(action-1);
+					action = action -1;
+				}
+			}
+			
+		} while(action != cars.size()+1);
+		System.out.println("Have a great day!");
 		scnr.close();
+	}
+	public static void displayMenu(ArrayList<Car> cars) {
+		System.out.println("Current Inventory:");
+		System.out.printf("%-10s %-10s %-10s %-15s %-10s\n", "Make", "Model", "Year", "Price", "Mileage");
+		System.out.println("");
+		int carCounter = 1;
+		for (Car car : cars) {
+			if (car instanceof UsedCar) {
+				System.out.printf("%d. %-10s %-10s %-10s $%,-15.2f %,-10.1f miles (Used)\n", carCounter++, ((UsedCar) car).getMake(), ((UsedCar) car).getModel(), ((UsedCar) car).getYear(), ((UsedCar) car).getPrice(), ((UsedCar) car).getMileage());
+			} else if (car instanceof Car) {
+				System.out.printf("%d. %-10s %-10s %-10s $%,.2f\n", carCounter++, car.getMake(), car.getModel(), car.getYear(), car.getPrice());
+			}
+		}
+		System.out.printf("%d. %-10s\n",carCounter++, "Quit\n");
 	}
 	
 
